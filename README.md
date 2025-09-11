@@ -89,5 +89,8 @@
 - feed:
   - getFeed{params}
  
-search:
+- search:
   - search {params}
+
+- reaction:
+  - setReaction {params}
