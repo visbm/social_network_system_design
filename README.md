@@ -70,3 +70,24 @@
 - traffic(read comment) =rps * commentSize * commentsAmountPerPost  =  1200 * 500 * 100 = 60 000 000 bytes/s = **60 mb/s**
 
 - traffic(read places) =rps * (avgPhoto + avgDownloadPhotoSz) + descSize) * avgPostAmount  =  120 * ((6 * 400 000) + 200) * 20 = 5 760 480 000 bytes/s = **5 gb/s**
+
+# API 
+- post:
+  - createPost {params}
+  - getPost {params}
+  - updatePost {params}
+  - deletePost {params}
+  - listPost {params}
+ 
+- comments:
+  - createComment {params} 
+  - getComment {params}
+  - updateComment {params}
+  - deleteComment {params}
+  - listComment {params}
+
+- feed:
+  - getFeed{params}
+ 
+search:
+  - search {params}
