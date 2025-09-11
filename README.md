@@ -66,7 +66,7 @@
 - traffic(write common) =rps * ((avgPhoto + avgUploadPhotoSz) + descSize) =  350 * ((6 * 1 600 000) + 200) = 3 360 070 000 bytes/s = **3.36 gb/s**
 - traffic(read common) =rps * ((avgPhoto + avgDownloadPhotoSz) + descSize) * avgPostAmount * watchesPerDay  =  1200 * (((6 * 400 000) + 200) * 20) * 10 = 576 048 000 000 bytes/s = **576 gb/s**
 
-- traffic(write comment) =rps *  commentSize =  1200 * 500 = 600 000 bytes/s = **600 kb/s**
-- traffic(read comment) =rps *  commentSize * commentsAmountPerPost  =  1200 * 500 * 100 = 60 000 000 bytes/s = **60 mb/s**
+- traffic(write comment) =rps *  ommentSize =  1200 * 500 = 600 000 bytes/s = **600 kb/s**
+- traffic(read comment) =rps * commentSize * commentsAmountPerPost  =  1200 * 500 * 100 = 60 000 000 bytes/s = **60 mb/s**
 
-- traffic(read places) =rps *  (avgPhoto + avgDownloadPhotoSz) + descSize) * avgPostAmount  =  120 * ((6 * 400 000) + 200) * 20 = 5 760 480 000 bytes/s = 5 gb/s
+- traffic(read places) =rps * (avgPhoto + avgDownloadPhotoSz) + descSize) * avgPostAmount  =  120 * ((6 * 400 000) + 200) * 20 = 5 760 480 000 bytes/s = **5 gb/s**
