@@ -1,0 +1,331 @@
+openapi: 3.0.0
+info:
+  title: Social Network API
+  version: 1.0.0
+
+servers:
+  - url: https://api.example.com
+
+paths:
+  /posts:
+    get:
+      summary: List posts
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PostResponse"
+    post:
+      summary: Create a new post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostCreateRequest"
+      responses:
+        "201":
+          description: Post created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResponse"
+
+  /posts/{post_id}:
+    get:
+      summary: Get a post by ID
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Post details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResponse"
+    put:
+      summary: Update a post
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostUpdateRequest"
+      responses:
+        "200":
+          description: Post updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResponse"
+    delete:
+      summary: Delete a post
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Post deleted
+
+  /comments:
+    post:
+      summary: Create a new comment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommentCreateRequest"
+      responses:
+        "201":
+          description: Comment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentResponse"
+
+  /comments/{comment_id}:
+    get:
+      summary: Get comment by ID
+      parameters:
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Comment details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentResponse"
+    put:
+      summary: Update comment
+      parameters:
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommentUpdateRequest"
+      responses:
+        "200":
+          description: Comment updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentResponse"
+    delete:
+      summary: Delete comment
+      parameters:
+        - name: comment_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Comment deleted
+
+  /comments_by_post/{post_id}:
+    get:
+      summary: Get comments by post ID
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 100
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: List of comments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CommentResponse"
+
+  /feed:
+    get:
+      summary: Get feed
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        "200":
+          description: User feed
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PostResponse"
+
+  /search:
+    get:
+      summary: Search posts by place or tag
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+      responses:
+        "200":
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PostResponse"
+
+  /reactions/{post_id}/{reaction_type}:
+    post:
+      summary: Set reaction for post
+      parameters:
+        - name: post_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: reaction_type
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [like, dislike, heart, laugh]
+      responses:
+        "200":
+          description: Reaction set successfully
+
+components:
+  schemas:
+    PostCreateRequest:
+      type: object
+      required:
+        - description
+        - photos
+      properties:
+        description:
+          type: string
+          maxLength: 100
+        photos:
+          type: array
+          maxItems: 10
+          items:
+            type: string
+            format: binary
+    PostUpdateRequest:
+      type: object
+      required:
+        - description
+      properties:
+        description:
+          type: string
+          maxLength: 100
+        photos:
+          type: array
+          maxItems: 10
+          items:
+            type: string
+            format: binary
+    PostResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        photo_urls:
+          type: array
+          items:
+            type: string
+            format: uri
+
+    CommentCreateRequest:
+      type: object
+      required:
+        - post_id
+        - text
+      properties:
+        post_id:
+          type: string
+        text:
+          type: string
+          maxLength: 250
+    CommentUpdateRequest:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          maxLength: 250
+    CommentResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        post_id:
+          type: string
+        text:
+          type: string
