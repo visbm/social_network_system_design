@@ -45,6 +45,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PostResponse"
+    put:
+      summary: Update a post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostUpdateRequest"
+      responses:
+        "200":
+          description: Post updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PostResponse"            
 
   /posts/{post_id}:
     get:
@@ -58,27 +73,6 @@ paths:
       responses:
         "200":
           description: Post details
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PostResponse"
-    put:
-      summary: Update a post
-      parameters:
-        - name: post_id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PostUpdateRequest"
-      responses:
-        "200":
-          description: Post updated
           content:
             application/json:
               schema:
@@ -111,6 +105,21 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CommentResponse"
+    put:
+      summary: Update a comment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommentUpdateRequest"
+      responses:
+        "200":
+          description: Comment updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CommentResponse"          
 
   /comments/{comment_id}:
     get:
@@ -124,27 +133,6 @@ paths:
       responses:
         "200":
           description: Comment details
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/CommentResponse"
-    put:
-      summary: Update comment
-      parameters:
-        - name: comment_id
-          in: path
-          required: true
-          schema:
-            type: string
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/CommentUpdateRequest"
-      responses:
-        "200":
-          description: Comment updated
           content:
             application/json:
               schema:
@@ -315,8 +303,11 @@ components:
     CommentUpdateRequest:
       type: object
       required:
+        - id
         - text
       properties:
+        id:
+          type: string
         text:
           type: string
           maxLength: 250
