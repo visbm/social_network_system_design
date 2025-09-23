@@ -244,6 +244,28 @@ paths:
       responses:
         "200":
           description: Reaction set successfully
+          
+  /users/{user_id}/{subscription_type}:
+    post:
+      summary: Subscribe or unsubscribe to a user
+      parameters:
+        - name: user_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: ID пользователя, на которого подписываемся/отписываемся
+        - name: subscription_type
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [subscribe, unsubscribe]
+          description: Действие — подписка или отписка
+      responses:
+        "204":
+          description: Successfully performed the action (No Content)
+
 
 components:
   schemas:
@@ -279,9 +301,9 @@ components:
           items:
             type: string
             format: binary
-      location:
-          type: string
-          maxLength: 200      
+        location:
+            type: string
+            maxLength: 200      
     PostResponse:
       type: object
       properties:
@@ -299,10 +321,13 @@ components:
         created_at:
           type: string
           format: date-time
+        updated_at:
+          type: string
+          format: date-time    
         location:
           type: string
           maxLength: 200  
-
+    
     CommentCreateRequest:
       type: object
       required:
@@ -335,6 +360,9 @@ components:
         user_id:
           type: string
         created_at:
+          type: string
+          format: date-time
+        updated_at:
           type: string
           format: date-time  
         text:
