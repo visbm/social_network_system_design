@@ -262,6 +262,9 @@ components:
           items:
             type: string
             format: binary
+        location:
+          type: string
+          maxLength: 200    
     PostUpdateRequest:
       type: object
       required:
@@ -276,10 +279,15 @@ components:
           items:
             type: string
             format: binary
+      location:
+          type: string
+          maxLength: 200      
     PostResponse:
       type: object
       properties:
         id:
+          type: string
+        user_id:
           type: string
         description:
           type: string
@@ -288,6 +296,12 @@ components:
           items:
             type: string
             format: uri
+        created_at:
+          type: string
+          format: date-time
+        location:
+          type: string
+          maxLength: 200  
 
     CommentCreateRequest:
       type: object
@@ -318,5 +332,10 @@ components:
           type: string
         post_id:
           type: string
+        user_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time  
         text:
           type: string
