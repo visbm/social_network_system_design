@@ -175,7 +175,7 @@
     - Disks_for_iops = iops / disk_iops = 376 / 100 = 0.376
     - Disks = 1
     
-  - Precalculated Feed SSD (SATA)
+  - Precalculated Feed SSD (SATA) // тут надо пересчитать на рпс выкладывания постов
     - Disks_for_capacity = capacity / disk_capacity = 2 TB / 100 TB = 0,02 disk
     - Disks_for_throughput = traffic / disk_throughput= 10 mb/s / 500 mb/s = 0,02 disks
     - Disks_for_iops = iops / disk_iops = 376 / 1000 = 0.0376
