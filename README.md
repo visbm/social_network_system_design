@@ -52,7 +52,7 @@
     - пользователь в среднем ищет места 1 раз в день и получает ленту на 20 постов;
 
     - пользователь может подписываться и отписываться, среднее кол-во действий 1 в неделю;
-    - среднее кол-во подписчиков 10 000;
+    - среднее кол-во подписчиков 10 00;
 
 - время отклика:
     - время запроса на создание поста до 2 секунд;
@@ -64,7 +64,7 @@
 
 - RPS
     - RPS(read posts) = 10 000 000 * 3 / 86400 = **350**
-    - RPS(write posts) = 10 000 000 / 86400 = **120**
+    - RPS(write posts) = 10 000 000 / 2 / 86400 = **60**
 
     - RPS(read comments) = 10 000 000 * 10 / 86400 = **1 200**
     - RPS(write comments) = 10 000 000 * 10 / 86400 = **1 200**
@@ -72,28 +72,32 @@
     - RPS(reactions write) = 10 000 000 * 100 / 86400 = **11 600**
 
     - RPS(search places) = 10 000 000 / 86400 = **120**
-  
+
     - RPS(subscribe) = 10 000 000 * 0.15 / 86400 = **18**
 
 - Traffic
-    - traffic(read posts) = rps * ((avgPhoto + avgDownloadPhotoSz) + descSize) * postPerView = 350 * ((6 * 1 600 000) + 200) * 20 = 67 201 400 000 bytes/s = **67 gb/s**
-    - traffic(write posts) = rps * ((avgPhoto + avgUploadPhotoSz) + descSize) = 120 * ((6 * 1 600 000) + 200) = 1 152 024 000 bytes/s = **1.2 gb/s**
+    - traffic(read post meta) = rps * avgPostMetaSize *  postsPerRead = 350 * 900 bytes * 20 = **6.3 gb/s**
+    - traffic(write post meta) = rps * avgPostMetaSize = 60 * 900 bytes = 54 mb/s
 
-    - traffic(write comments) =rps * commentSize =  1200 * 500 = 600 000 bytes/s = **600 kb/s**
-    - traffic(read comments) =rps * commentSize * commentsAmountPerPost  =  1200 * 500 * 100 = 60 000 000 bytes/s = **60 mb/s**
+    - traffic(read post media) = rps * avgPhotoSize * amountPhotos * postsPerRead = 350 * 400 000 bytes * 6 * 20 = **16.8 gb/s**
+    - traffic(write post media) = rps * avgUploadPhotoSize * amountPhotos = 60 * 1 600 000 bytes * 6 = **576 mb/s**
 
-    - reactions(react write) = rps * reactionSize = 11 600 * 2 = 23 200 bytes/s = **23 kb/s**
+    - traffic(write comments) =rps * commentSize =  1200 * 500 bytes = **600 kb/s**
+    - traffic(read comments) =rps * commentSize * commentsAmountPerPost  =  1200 * 500 * 100  = **60 mb/s**
 
-    - search place(places read) = rps * ((avgPhoto + avgDownloadPhotoSz) + descSize) * postPerView = 120 * ((6 * 1 600 000) + 200) * 20 =23 040 480 000 bytes/s = **23 gb/s**
+    - reactions(react write) = rps * reactionSize = 11 600 * 40  = 23 200 bytes/s = **23 kb/s**
 
-    - subscribe (write) = rps * subSize = 18 * 32 bytes = 576 B/s = 0,000576 mb/s
+    - search place(places read meta) = rps * avgPostMetaSize * postsPerRead = 120 * 900 bytes * 20 = **2.2 mb/s**
+    - search place(places read media) = rps * avgPhotoSize * amountPhotos * postsPerRead = 120 * 400 000 bytes * 6 *20 = **23 gb/s**
+
+    - subscribe (write) = rps * subSize = 18 * 24 bytes = 432 B/s = 0,000432 mb/s
 
 - Required memory:
 
     - Replication factor = 3
     - Service operation time = 1 years
 
-    - Post: postSize * PRS create * 86400 * 365 = 1090 bytes * 120 * 86400 * 365 = 4,2 TB
+    - Post: postSize * PRS create * 86400 * 365 = 1090 bytes * 60 * 86400 * 365 = 2 TB
   
     - Comments: commentSize * PRS create * 86400 * 365 = 173 bytes * 1 200 * 86400 * 365 = 6,6 TB
 
@@ -101,27 +105,34 @@
 
     - Subs: subsSize * avgSubs * DAU * 365 = 24 bytes * 1000 * 10 000 000 = 240 GB
 
-    Precalculated feed for user under 1000 subs (80% of users) with 20 post. If the values are higher, the feed is calculated at the time of the request.
-  - PreCalcFeed: rowSize * Rps create post * 0.8 * amount of post in feed  := 32 bytes * 120 * 0.8 * 20 * 86400 * 365 = 2 TB
+    Precalculated feed for user under 10 000 subs (80% of users) with 20 post. If the values are higher, the feed is calculated at the time of the request.
+  - PreCalcFeed: rowSize * Rps create post * 0.8 * amount of post in feed  := 32 bytes * 60 * 0.8 * 20 * 86400 * 365 = 1 TB
 
-  - Photos(S3): avgPhotoSizeCompressed * avgPhotoAmount* RPS create post * 86400 * 365 = 400 000 bytes * 6 * 120 * 86400 * 365 = 9 082 368 TB
+  - Photos(S3): avgPhotoSizeCompressed * avgPhotoAmount* RPS create post * 86400 * 365 = 400 000 bytes * 6 * 60 * 86400 * 365 = 4 582 368 TB
   
-  Required memory for 1 year = 28,44 TB * 3 replicas + 30% = 111 TB
+  Required memory for 1 year = 25 TB * 3 replicas + 30% = 100 TB
 
 #Disks
 
 
   - Post HDD
-    - Disks_for_capacity = capacity / disk_capacity = 4.2 TB / 32 TB = 0,13 disk
-    - Disks_for_throughput = traffic / disk_throughput= 10 mb/s (no photo in DB) / 100 mb/s = 0.1 disks
-    - Disks_for_iops = iops / disk_iops = 470 / 100 = 4.7 disks
-    - Disks = 5
+    - Disks_for_capacity = capacity / disk_capacity = 2 TB / 32 TB = 0,65 disk
+    - Disks_for_throughput = traffic / disk_throughput= 6 300 mb/s (no photo in DB) / 100 mb/s = 63 disks
+    - Disks_for_iops = iops / disk_iops = 410 / 100 = 4.1 disks
+    - Disks = 63
 
   - Post SSD (SATA)
-    - Disks_for_capacity = capacity / disk_capacity = 4.2 TB / 100 TB = 0,042 disk
-    - Disks_for_throughput = traffic / disk_throughput= 10 mb/s (no photo in DB) / 500 mb/s = 0.02 disks
-    - Disks_for_iops = iops / disk_iops = 470 / 1000 = 0.47 disks
-    - Disks = 1
+    - Disks_for_capacity = capacity / disk_capacity = 2 TB / 100 TB = 0,021 disk
+    - Disks_for_throughput = traffic / disk_throughput= 6 300 mb/s (no photo in DB) / 500 mb/s = 12,6 disks
+    - Disks_for_iops = iops / disk_iops = 410 / 1000 = 0.41 disks
+    - Disks = 13
+
+  - Post SSD (nVME)
+    - Disks_for_capacity = capacity / disk_capacity = 2 TB / 30 TB = 0,067 disk
+    - Disks_for_throughput = traffic / disk_throughput= 6 300 mb/s (no photo in DB) / 3 000 mb/s = 2,1 disks
+    - Disks_for_iops = iops / disk_iops = 410 / 10 000 = 0.041 disks
+    - Disks = 3
+
  ____
 
   - Comments HDD
@@ -151,7 +162,7 @@
     
   - Reactions SSD (nVME)
     - Disks_for_capacity = capacity / disk_capacity = 15,4 TB / 30 TB = 0,5133333333 disk
-    - Disks_for_throughput = traffic / disk_throughput= 0.023 mb/s / 30000 mb/s = 0,0000007667 disks
+    - Disks_for_throughput = traffic / disk_throughput= 0.023 mb/s / 3 000 mb/s = 0,0000076667 disks
     - Disks_for_iops = iops / disk_iops = 11 600 / 10 000 = 1.16
     - Disks = 2
  ------
@@ -171,12 +182,12 @@
 
   - Precalculated Feed HDD
     - Disks_for_capacity = capacity / disk_capacity = 2 TB / 32 TB = 0,0625 disk
-    - Disks_for_throughput = traffic / disk_throughput= 10 mb/s / 100 mb/s = 0,1 disks
-    - Disks_for_iops = iops / disk_iops = 376 / 100 = 0.376
+    - Disks_for_throughput = traffic / disk_throughput= 2.2 mb/s / 100 mb/s = 0,022 disks
+    - Disks_for_iops = iops ((new posts + rps read)* 0.8)/ disk_iops = 328 / 100 = 0.328
     - Disks = 1
     
-  - Precalculated Feed SSD (SATA) // тут надо пересчитать на рпс выкладывания постов
+  - Precalculated Feed SSD (SATA) 
     - Disks_for_capacity = capacity / disk_capacity = 2 TB / 100 TB = 0,02 disk
-    - Disks_for_throughput = traffic / disk_throughput= 10 mb/s / 500 mb/s = 0,02 disks
-    - Disks_for_iops = iops / disk_iops = 376 / 1000 = 0.0376
+    - Disks_for_throughput = traffic / disk_throughput= 2.2 mb/s / 500 mb/s = 0,0044 disks
+    - Disks_for_iops = iops ((new posts + rps read)* 0.8) / disk_iops = 328 / 1000 = 0.0328
     - Disks = 1
