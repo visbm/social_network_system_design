@@ -14,7 +14,7 @@
 - ограничения:
   - максимум 10 фото в посте;
   - среднее кол-во фото 6 в посте;
-  - максимальный вес фото 10 Мб;
+  - максимальный вес фото 5 Мб;
   - средний вес фото при создании поста 1,6 Мб;
   - средний вес фото при получении поста 0,4 Мб;
   - описание максимум 100 символов;
@@ -26,7 +26,7 @@
 - география и аудитория:
   - DAU 10 000 000;
   - только СНГ;
-  - сезонность отпусков(x2 на создание постов);
+  - сезонность отпусков(x2 на активность);
 
 - доступность и надежность:
   - доступность 99,95%;
@@ -37,7 +37,7 @@
   - мобильные устройства и ВЕБ;
 
 - пользовательская активность:
-  - пользователь создает 1 пост в день;
+  - пользователь создает 1 пост в два дня;
   - пользователь смотрит посты по 10 раз в день;
   - средняя длина ленты 20 постов;
     
@@ -51,7 +51,7 @@
   - поиск мест по тегу и имени города/страны;
   - пользователь в среднем ищет места 1 раз в день и получает ленту на 20 постов;
 
-  - пользователь может подписываться и отписываться, среднее кол-во действий раз в неделю;
+  - пользователь может подписываться и отписываться, среднее кол-во действий - 1раз в неделю;
   - среднее кол-во подписчиков 10 000;
 
 - время отклика:
@@ -64,22 +64,30 @@
 
 - RPS
   - RPS(read posts) = 10 000 000 * 3 / 86400 = **350**
-  - RPS(write posts) = 10 000 000 / 86400 = **120**
+  - RPS(write posts) = 10 000 000 / 2 / 86400 = **60**
   
-  - RPS(read comments) = 10 000 000 * 10 / 86400 = **1 200**
-  - RPS(write comments) = 10 000 000 * 10 / 86400 = **1 200**
+  - RPS(read comments) = 10 000 000 * 10 / 86400 = **1 200**
+  - RPS(write comments) = 10 000 000 * 10 / 86400 = **1 200**
   
-  - RPS(reactions write) = 10 000 000 * 100 / 86400 = **11 600**
+  - RPS(reactions write) = 10 000 000 * 100 / 86400 = **11 600**
   
   - RPS(search places) = 10 000 000 / 86400 = **120**
 
+  - RPS(subscribe) = 10 000 000 * 0.15 / 86400 = **18**
+
 - Traffic
-    - traffic(read posts) = rps * ((avgPhoto + avgDownloadPhotoSz) + descSize) * postPerWiew = 350 * ((6 * 1 600 000) + 200) * 20 = 67 201 400 000 bytes/s = **67 gb/s**
-    - traffic(write posts) = rps * ((avgPhoto + avgUploadPhotoSz) + descSize) = 120 * ((6 * 1 600 000) + 200) = 1 152 024 000 bytes/s = **1.2 gb/s**
+    - traffic(read post meta) = rps * avgPostMetaSize *  postsPerRead = 350 * 900 bytes * 20 = **6.3 gb/s**
+    - traffic(write post meta) = rps * avgPostMetaSize = 60 * 900 bytes = 54 mb/s
+  
+    - traffic(read post media) = rps * avgPhotoSize * amountPhotos * postsPerRead = 350 * 400 000 bytes * 6 * 20 = **16.8 gb/s**
+    - traffic(write post media) = rps * avgUploadPhotoSize * amountPhotos = 60 * 1 600 000 bytes * 6 = **576 mb/s**
  
-    - traffic(write comments) =rps * сommentSize =  1200 * 500 = 600 000 bytes/s = **600 kb/s**
-    - traffic(read comments) =rps * commentSize * commentsAmountPerPost  =  1200 * 500 * 100 = 60 000 000 bytes/s = **60 mb/s**
+    - traffic(write comments) =rps * commentSize =  1200 * 500 bytes = **600 kb/s**
+    - traffic(read comments) =rps * commentSize * commentsAmountPerPost  =  1200 * 500 * 100  = **60 mb/s**
  
-    - reactions(react write) = rps * reactionSize = 11 600 * 2 = 23 200 bytes/s = **23 kb/s**
+    - reactions(react write) = rps * reactionSize = 11 600 * 40  = 23 200 bytes/s = **23 kb/s**
  
-    - search place(places read) = rps * ((avgPhoto + avgDownloadPhotoSz) + descSize) * postPerWiew = 120 * ((6 * 1 600 000) + 200) * 20 =23 040 480 000 bytes/s = **23 gb/s**
+    - search place(places read meta) = rps * avgPostMetaSize * postsPerRead = 120 * 900 bytes * 20 = **2.2 mb/s**
+    - search place(places read media) = rps * avgPhotoSize * amountPhotos * postsPerRead = 120 * 400 000 bytes * 6 *20 = **23 gb/s**
+
+    - subscribe (write) = rps * subSize = 18 * 32 bytes = 576 B/s = 0,000576 mb/s
