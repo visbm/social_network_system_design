@@ -6,7 +6,75 @@ info:
 servers:
   - url: https://api.example.com
 
+security:
+  - bearerAuth: []
+
 paths:
+  /auth/login:
+    post:
+      summary: Request login code via phone number
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phone_number
+              properties:
+                phone_number:
+                  type: string
+                  example: "+1234567890"
+      responses:
+        "200":
+          description: SMS code sent
+
+  /auth/login_confirm:
+    post:
+      summary: Confirm login code and get JWT
+
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phone_number
+                - code
+              properties:
+                phone_number:
+                  type: string
+                  example: "+1234567890"
+                code:
+                  type: string
+                  example: "123456"
+      responses:
+        "200":
+          description: JWT token issued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+                    example: "bearer"
+                  expires_in:
+                    type: integer
+                    example: 3600
+
+  /auth/logout:
+    post:
+      summary: Logout and invalidate JWT
+      responses:
+        "204":
+          description: Token invalidated, user logged out
+
   /posts:
     get:
       summary: List posts
@@ -59,7 +127,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PostResponse"            
+                $ref: "#/components/schemas/PostResponse"
 
   /posts/{post_id}:
     get:
@@ -119,7 +187,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CommentResponse"          
+                $ref: "#/components/schemas/CommentResponse"
 
   /comments/{comment_id}:
     get:
@@ -244,7 +312,7 @@ paths:
       responses:
         "200":
           description: Reaction set successfully
-          
+
   /users/{user_id}/{subscription_type}:
     post:
       summary: Subscribe or unsubscribe to a user
@@ -268,6 +336,12 @@ paths:
 
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     PostCreateRequest:
       type: object
@@ -286,7 +360,7 @@ components:
             format: binary
         location:
           type: string
-          maxLength: 200    
+          maxLength: 200
     PostUpdateRequest:
       type: object
       required:
@@ -302,8 +376,8 @@ components:
             type: string
             format: binary
         location:
-            type: string
-            maxLength: 200      
+          type: string
+          maxLength: 200
     PostResponse:
       type: object
       properties:
@@ -323,11 +397,11 @@ components:
           format: date-time
         updated_at:
           type: string
-          format: date-time    
+          format: date-time
         location:
           type: string
-          maxLength: 200  
-    
+          maxLength: 200
+
     CommentCreateRequest:
       type: object
       required:
@@ -364,6 +438,8 @@ components:
           format: date-time
         updated_at:
           type: string
-          format: date-time  
+          format: date-time
+
+
         text:
           type: string
