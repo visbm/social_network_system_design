@@ -30,6 +30,18 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PostResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       summary: Create a new post
       requestBody:
@@ -45,6 +57,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PostResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
     put:
       summary: Update a post
       requestBody:
@@ -60,6 +85,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PostResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /posts/{post_id}:
     get:
@@ -77,6 +114,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/PostResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
     delete:
       summary: Delete a post
       parameters:
@@ -88,6 +138,18 @@ paths:
       responses:
         "204":
           description: Post deleted
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /comments:
     post:
@@ -105,6 +167,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CommentResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
     put:
       summary: Update a comment
       requestBody:
@@ -120,23 +195,19 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/CommentResponse"
-
-  /comments/{comment_id}:
-    get:
-      summary: Get comment by ID
-      parameters:
-        - name: comment_id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: Comment details
+        "400":
+          description: Invalid request
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/CommentResponse"
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
     delete:
       summary: Delete comment
       parameters:
@@ -148,8 +219,20 @@ paths:
       responses:
         "204":
           description: Comment deleted
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
-  /comments_by_post/{post_id}:
+  /posts/{post_id}/comments:
     get:
       summary: Get comments by post ID
       parameters:
@@ -177,6 +260,18 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/CommentResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /feed:
     get:
@@ -201,6 +296,18 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PostResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
   /search:
     get:
@@ -225,8 +332,20 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PostResponse"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
-  /reactions/{post_id}/{reaction_type}:
+  /posts/{post_id}/reactions:
     post:
       summary: Set reaction for post
       parameters:
@@ -235,37 +354,67 @@ paths:
           required: true
           schema:
             type: string
-        - name: reaction_type
-          in: path
-          required: true
-          schema:
-            type: string
-            enum: [like, dislike, heart, laugh]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                  enum: [like, dislike, heart, laugh]
       responses:
         "200":
           description: Reaction set successfully
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
-  /users/{user_id}/{subscription_type}:
+  /users/{user_id}/subscriptions:
     post:
-      summary: Subscribe or unsubscribe to a user
+      summary: Manage user subscription
       parameters:
         - name: user_id
           in: path
           required: true
           schema:
             type: string
-          description: ID пользователя, на которого подписываемся/отписываемся
-        - name: subscription_type
-          in: path
-          required: true
-          schema:
-            type: string
-            enum: [subscribe, unsubscribe]
-          description: Действие — подписка или отписка
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  enum: [subscribe, unsubscribe]
+                  description: Действие — подписка или отписка
       responses:
-        "204":
-          description: Successfully performed the action (No Content)
-
+        "200":
+          description: Subscription action applied successfully
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   schemas:
@@ -380,4 +529,11 @@ components:
           type: string
           format: date-time
         text:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
           type: string
