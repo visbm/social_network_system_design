@@ -94,8 +94,8 @@
 
   - Required memory:
 
-      - Replication factor = 2
-      - Service operation time = 1 years
+    - Replication factor = 2
+    - Service operation time = 1 years
 
     - Post: postSize * PRS create * 86400 * 365 = 1090 bytes * 60 * 86400 * 365 = 2 TB
     - Post_reaction_cache: rowSize * (RPS react / RPS post write) * TTL(10 days) = 100 bytes * (11 600 / 60)  * 86400 * 10 = 17 gB
@@ -112,8 +112,8 @@
     - Feed_cache_user_subscription: rowSize(avg sub count 1000) * dau:= 15000 bytes * 610 000 000 = 150 GB RAM  
 
     - Photos(S3): avgPhotoSizeCompressed * avgPhotoAmount* RPS create post * 86400 * 365 = 400 000 bytes * 6 * 60 * 86400 * 365 = 4 582 368 TB
-  
-    Required memory for 1 year = 25 TB * 2 replicas + 30% = 65 TB
+
+    Required memory for 1 year = 43.47 TB * 2 replicas + 30% = 113 TB
 
 # Disks
 
