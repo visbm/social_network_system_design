@@ -52,7 +52,7 @@
     - пользователь в среднем ищет места 1 раз в день и получает ленту на 20 постов;
 
     - пользователь может подписываться и отписываться, среднее кол-во действий 1 в неделю;
-    - среднее кол-во подписчиков 10 00;
+    - среднее кол-во подписчиков 1000;
 
 - время отклика:
     - время запроса на создание поста до 2 секунд;
@@ -97,16 +97,19 @@
       - Replication factor = 2
       - Service operation time = 1 years
 
-      - Post: postSize * PRS create * 86400 * 365 = 1090 bytes * 60 * 86400 * 365 = 2 TB
+    - Post: postSize * PRS create * 86400 * 365 = 1090 bytes * 60 * 86400 * 365 = 2 TB
+    - Post_reaction_cache: rowSize * (RPS react / RPS post write) * TTL(10 days) = 100 bytes * (11 600 / 60)  * 86400 * 10 = 17 gB
   
-      - Comments: commentSize * PRS create * 86400 * 365 = 173 bytes * 1 200 * 86400 * 365 = 6,6 TB
+    - Comments: commentSize * PRS create * 86400 * 365 = 173 bytes * 1 200 * 86400 * 365 = 6,6 TB
 
-      - Reactions:  reactSize * PRS create * 86400 * 365 = 42 bytes * 11 600 * 86400 * 365 = 15,4 TB
+    - Reactions:  reactSize * PRS create * 86400 * 365 = 42 bytes * 11 600 * 86400 * 365 = 15,4 TB
+    - Reaction_post:  rowSize * (RPS react / RPS post write) * 86400 * 365 = 50 bytes * 11 600 * 86400 * 365 = 18,3 TB
 
-      - Subs: subsSize * avgSubs * DAU * 365 = 24 bytes * 1000 * 10 000 000 = 240 GB
+    - Subs: subsSize * avgSubs * DAU * 365 = 24 bytes * 1000 * 10 000 000 = 240 GB
 
-      Precalculated feed for user under 10 000 subs (80% of users) with 20 post. If the values are higher, the feed is calculated at the time of the request.
+    Precalculated feed for user under 10 000 subs (80% of users) with 20 post. If the values are higher, the feed is calculated at the time of the request.
     - PreCalcFeed: rowSize * Rps create post * 0.8 * amount of post in feed  := 32 bytes * 60 * 0.8 * 20 * 86400 * 365 = 1 TB
+    - Feed_cache_user_subscription: rowSize(avg sub count 1000) * dau:= 15000 bytes * 610 000 000 = 150 GB RAM  
 
     - Photos(S3): avgPhotoSizeCompressed * avgPhotoAmount* RPS create post * 86400 * 365 = 400 000 bytes * 6 * 60 * 86400 * 365 = 4 582 368 TB
   
@@ -132,6 +135,8 @@
     - Disks_for_iops = iops / disk_iops = 410 / 10 000 = 0.041 disks
     - Disks = 3 disks
 
+  - Post_reaction_cache
+    - RAM_capacity = 17 gb
  ____
 
   - Comments HDD
@@ -148,19 +153,19 @@
 -------
 
   - Reactions HDD
-    - Disks_for_capacity = capacity / disk_capacity = 15,4 TB / 32 TB = 0,481 disk
+    - Disks_for_capacity = capacity / disk_capacity = (15,4 + 18.3) TB / 32 TB = 1,05 disk
     - Disks_for_throughput = traffic / disk_throughput= 0.023 mb/s / 100 mb/s = 0,00023 disks
     - Disks_for_iops = iops / disk_iops = 11 600 / 100 = 116 disks
     - Disks = 116
     
   - Reactions SSD (SATA)
-    - Disks_for_capacity = capacity / disk_capacity = 15,4 TB / 100 TB = 0,154 disk
+    - Disks_for_capacity = capacity / disk_capacity = (15,4 + 18.3) / 100 TB = 0,337 disk
     - Disks_for_throughput = traffic / disk_throughput= 0.023 mb/s / 500 mb/s = 0,000046 disks
     - Disks_for_iops = iops / disk_iops = 11 600 / 1000 = 11.6 disks
     - Disks = 12   
     
   - Reactions SSD (nVME)
-    - Disks_for_capacity = capacity / disk_capacity = 15,4 TB / 30 TB = 0,5133333333 disk
+    - Disks_for_capacity = capacity / disk_capacity = (15,4 + 18.3) / 30 TB = 1.1 disk
     - Disks_for_throughput = traffic / disk_throughput= 0.023 mb/s / 3 000 mb/s = 0,0000076667 disks
     - Disks_for_iops = iops / disk_iops = 11 600 / 10 000 = 1.16 disks
     - Disks = 2
@@ -190,3 +195,6 @@
     - Disks_for_throughput = traffic / disk_throughput= 2.2 mb/s / 500 mb/s = 0,0044 disks
     - Disks_for_iops = iops ((new posts + rps read)* 0.8) / disk_iops = 328 / 1000 = 0.0328 disks
     - Disks = 1
+    
+  - Feed_cache_user_subscription
+    - RAM_capacity = 150 gb 
