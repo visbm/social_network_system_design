@@ -94,25 +94,26 @@
 
   - Required memory:
 
-      - Replication factor = 2
-      - Service operation time = 1 years
+    - Replication factor = 2
+    - Replication factor for post = 3
+    - Service operation time = 1 years
 
-    - Post: postSize * PRS create * 86400 * 365 = 1090 bytes * 60 * 86400 * 365 = 2 TB
-    - Post_reaction_cache: rowSize * (RPS react / RPS post write) * TTL(10 days) = 100 bytes * (11 600 / 60)  * 86400 * 10 = 17 gB
+    - Post: postSize * PRS create * 86400 * 365 = 1090 bytes * 60 * 86400 * 365 = **2 TB**
+    - Post_reaction_cache: rowSize * (RPS react / RPS post write) * TTL(10 days) = 100 bytes * (11 600 / 60)  * 86400 * 10 = **17 gB**
   
-    - Comments: commentSize * PRS create * 86400 * 365 = 173 bytes * 1 200 * 86400 * 365 = 6,6 TB
+    - Comments: commentSize * PRS create * 86400 * 365 = 173 bytes * 1 200 * 86400 * 365 = **6,6 TB**
 
-    - Reactions:  reactSize * PRS create * 86400 * 365 = 42 bytes * 11 600 * 86400 * 365 = 15,4 TB
-    - Reaction_post:  rowSize * (RPS react / RPS post write) * 86400 * 365 = 50 bytes * 11 600 * 86400 * 365 = 18,3 TB
-
-    - Subs: subsSize * avgSubs * DAU * 365 = 24 bytes * 1000 * 10 000 000 = 240 GB
+    - Reactions:  reactSize * PRS create * 86400 * 365 = 42 bytes * 11 600 * 86400 * 365 = **15,4 TB**
+    - Reaction_post:  rowSize * (RPS react / RPS post write) * 86400 * 365 = 50 bytes * (11 600 / 60) * 86400 * 365 = **304 gB**
+    - 
+    - Subs: subsSize * avgSubs * DAU * 365 = 24 bytes * 1000 * 10 000 000 = **240 GB**
 
     Precalculated feed for user under 10 000 subs (80% of users) with 20 post. If the values are higher, the feed is calculated at the time of the request.
-    - PreCalcFeed: rowSize * Rps create post * 0.8 * amount of post in feed  := 32 bytes * 60 * 0.8 * 20 * 86400 * 365 = 1 TB
-    - Feed_cache_user_subscription: rowSize(avg sub count 1000) * dau:= 15000 bytes * 610 000 000 = 150 GB RAM  
+    - PreCalcFeed: rowSize * Rps create post * 0.8 * amount of post in feed  := 32 bytes * 60 * 0.8 * 20 * 86400 * 365 = **1 TB**
+    - Feed_cache_user_subscription: rowSize(avg sub count 1000) * dau:= 15000 bytes * 610 000 000 = **150 GB RAM**  
 
-    - Photos(S3): avgPhotoSizeCompressed * avgPhotoAmount* RPS create post * 86400 * 365 = 400 000 bytes * 6 * 60 * 86400 * 365 = 4 582 368 TB
-  
+    - Photos(S3): avgPhotoSizeCompressed * avgPhotoAmount* RPS create post * 86400 * 365 = 400 000 bytes * 6 * 60 * 86400 * 365 = **4 582 368 TB**
+
     Required memory for 1 year = 25 TB * 2 replicas + 30% = 65 TB
 
 # Disks
@@ -198,3 +199,28 @@
     
   - Feed_cache_user_subscription
     - RAM_capacity = 150 gb 
+
+# Hosts
+
+Hosts = disks / disks_per_host
+Hosts_with_replication = hosts * replication_factor 
+
+ - Post
+   - Hosts = 3 / 1 = 3
+   - Hosts_with_replication = 3 * 3 = 9
+
+ - Comments
+   - Hosts = 2 / 1 = 2
+   - Hosts_with_replication = 2 * 2 = 4
+
+ - Reactions
+   - Hosts = 3 / 1 = 3
+   - Hosts_with_replication = 3 * 2 = 6
+
+ - Subs
+   - Hosts = 1 / 1 = 1
+   - Hosts_with_replication = 1 * 2 = 2
+
+ - Feed
+   - Hosts = 1 / 1 = 1
+   - Hosts_with_replication = 1 * 2 = 2

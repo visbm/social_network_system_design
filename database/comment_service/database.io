@@ -1,3 +1,10 @@
+// Replication:
+// - master-slave (async)
+// - replication factor 2
+//
+// Sharding:
+// - key based by post_id
+
 Table comment {
   id uuid [primary key, note: 'Unique identifier of the comment']
   post_id uuid [not null, note: 'Identifier of the post the comment belongs to']

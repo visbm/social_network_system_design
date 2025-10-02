@@ -1,3 +1,7 @@
+// Replication:
+// - master-slave (sync)
+// - replication factor 3
+
 Table post {
   id uuid [primary key, note: 'Unique identifier of the post']
   user_id uuid [not null, note: 'Identifier of the user who created the post']

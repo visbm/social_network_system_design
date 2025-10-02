@@ -1,3 +1,10 @@
+// Replication:
+// - master-slave (sync)
+// - replication factor 2
+//
+// Sharding:
+// - key based by user_id
+
 Table user_subscription {
   subscriber_id uuid [not null, note: 'User who subscribes']
   subscribed_to_id uuid [not null, note: 'User who is being followed']
