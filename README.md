@@ -128,7 +128,8 @@
     Required media memory for 1 year = **11.96 PB**
 
 # Disks
-
+-------
+- Posts:
   - Post HDD
     - Disks_for_capacity = capacity / disk_capacity = 7.8 TB / 32 TB = 0,24375 disk
     - Disks_for_throughput = traffic / disk_throughput= 6 300 mb/s (no photo in DB) / 100 mb/s = 63 disks
@@ -152,7 +153,7 @@
 
 Chose SSD (nVME) 3 disks
 -------
-
+- Comments:
   - Comments HDD
     - Disks_for_capacity = capacity / disk_capacity = 17.16 TB / 32 TB = 0,53625 disk
     - Disks_for_throughput = traffic / disk_throughput= 60.6 mb/s / 100 mb/s = 0,606 disks
@@ -167,7 +168,7 @@ Chose SSD (nVME) 3 disks
 
 Chose SSD (Sata) 3 disks
 -------
-
+- Reactions:
   - Reactions HDD
     - Disks_for_capacity = capacity / disk_capacity = 40.04 TB / 32 TB = 1,25 disk
     - Disks_for_throughput = traffic / disk_throughput= 0.023 mb/s / 100 mb/s = 0,00023 disks
@@ -188,7 +189,7 @@ Chose SSD (Sata) 3 disks
 
 Chose SSD (nVME) 4 disks
  ------
-
+- Subscriptions:
   - Subs HDD
     - Disks_for_capacity = capacity / disk_capacity = 0.624 TB / 32 TB = 0,0195 disk
     - Disks_for_throughput = traffic / disk_throughput= 0,000576 mb/s / 100 mb/s = 0,00000576 disks
@@ -203,7 +204,7 @@ Chose SSD (nVME) 4 disks
 
 Chose SSD (SATA) 1 disk
 -------   
-
+- Precalculated Feed:
   - Precalculated Feed HDD
     - Disks_for_capacity = capacity / disk_capacity = 2.6 TB / 32 TB = 0,08125 disk
     - Disks_for_throughput = traffic / disk_throughput= 2.2 mb/s / 100 mb/s = 0,022 disks
@@ -221,7 +222,7 @@ Chose SSD (SATA) 1 disk
 
 Chose SSD (SATA) 1 disk
 -------
-
+- Media:
  - Media HDD
     - Disks_for_capacity = capacity / disk_capacity = 11 960 TB / 32 TB = 373,75 disk
     - Disks_for_throughput = traffic / disk_throughput= 17 376 mb/s / 100 mb/s = 173,76 disks
@@ -252,12 +253,12 @@ Hosts_with_replication = hosts * replication_factor
    - Hosts_with_replication = 3 * 3 = 9
 
  - Comments
-   - Hosts = 2 / 1 = 2
-   - Hosts_with_replication = 2 * 2 = 4
-
- - Reactions
    - Hosts = 3 / 1 = 3
    - Hosts_with_replication = 3 * 2 = 6
+
+ - Reactions
+   - Hosts = 4 / 1 = 4
+   - Hosts_with_replication = 4 * 2 = 8
 
  - Subs
    - Hosts = 1 / 1 = 1
@@ -266,3 +267,9 @@ Hosts_with_replication = hosts * replication_factor
  - Feed
    - Hosts = 1 / 1 = 1
    - Hosts_with_replication = 1 * 2 = 2
+   
+ - Media
+   - Hosts = 120 / 20 = 6
+   - Hosts_with_replication = 6 * 2 = 12
+
+Total hosts : 43
