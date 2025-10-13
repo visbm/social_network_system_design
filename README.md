@@ -114,22 +114,25 @@
 
       - Subs: subsSize * avgSubs * DAU * 365 = 24 bytes * 1000 * 10 000 000 = **240 GB**
       - Total for subs = 240 GB * 2 replicas + 30 % = **624 GB**
+    
+      - Search: rowSize * rps(createPost) = 1090 bytes * 60 * 86400 * 365 = **2 TB**
+      - Total for search: 2 TB * 3 replicas + 30 % = **7,8 TB**
 
     Precalculated feed for user under 10 000 subs (80% of users) with 20 post. If the values are higher, the feed is calculated at the time of the request.
-      - PreCalcFeed: rowSize * Rps create post * 0.8 * amount of post in feed  := 32 bytes * 60 * 0.8 * 20 * 86400 * 365 = **1 TB**
-      - Total for preCalcFeed = 1 TB * 2 replicas + 30 % = **2.6 TB**
+    - PreCalcFeed: rowSize * Rps create post * 0.8 * amount of post in feed  := 32 bytes * 60 * 0.8 * 20 * 86400 * 365 = **1 TB**
+    - Total for preCalcFeed = 1 TB * 2 replicas + 30 % = **2.6 TB**
     
-      - Feed_cache_user_subscription: rowSize(avg sub count 1000) * dau:= 15000 bytes * 610 000 000 = **150 GB RAM**  
+    - Feed_cache_user_subscription: rowSize(avg sub count 1000) * dau:= 15000 bytes * 610 000 000 = **150 GB RAM**  
 
-      - Photos(S3): avgPhotoSizeCompressed * avgPhotoAmount* RPS create post * 86400 * 365 = (400 000 bytes * 6 * 60) * 86400 * 365 = 4 541.184 TB = **4.6 PB**  
-      - Total for photos = 4.6 PT * 2 replicas + 30% = **11.96 PB**
+    - Photos(S3): avgPhotoSizeCompressed * avgPhotoAmount* RPS create post * 86400 * 365 = (400 000 bytes * 6 * 60) * 86400 * 365 = 4 541.184 TB = **4.6 PB**  
+    - Total for photos = 4.6 PT * 2 replicas + 30% = **11.96 PB**
 
     Required meta memory for 1 year = **69 TB**
     Required media memory for 1 year = **11.96 PB**
 
 # Disks
 -------
-- Posts:
+ ## Posts: Chose SSD (SATA) 1 disk
   - Post HDD
     - Disks_for_capacity = capacity / disk_capacity = 7.8 TB / 32 TB = 0,24375 disk
     - Disks_for_throughput = traffic / disk_throughput= 6.3 mb/s (no photo in DB) / 100 mb/s = 0.63 disks
@@ -151,10 +154,9 @@
   - Post_reaction_cache
     - RAM_capacity = 17 gb
 
-Chose SSD (SATA) 1 disks
 -------
-- Comments:
-  - Comments HDD
+## Comments: Chose SSD (Sata) 3 disks
+  - Comments HDD 
     - Disks_for_capacity = capacity / disk_capacity = 17.16 TB / 32 TB = 0,53625 disk
     - Disks_for_throughput = traffic / disk_throughput= 60.6 mb/s / 100 mb/s = 0,606 disks
     - Disks_for_iops = iops / disk_iops = 2400 / 100 = 24 disks
@@ -166,9 +168,8 @@ Chose SSD (SATA) 1 disks
     - Disks_for_iops = iops / disk_iops = 2400 / 1000= 2.4 disks
     - Disks = 3
 
-Chose SSD (Sata) 3 disks
 -------
-- Reactions:
+## Reactions:Chose SSD (nVME) 4 disks
   - Reactions HDD
     - Disks_for_capacity = capacity / disk_capacity = 40.04 TB / 32 TB = 1,25 disk
     - Disks_for_throughput = traffic / disk_throughput= 0.023 mb/s / 100 mb/s = 0,00023 disks
@@ -187,9 +188,8 @@ Chose SSD (Sata) 3 disks
     - Disks_for_iops = iops / disk_iops = 11 600 / 10 000 = 1.16 disks
     - Disks = 2 * 2 replicas = 4
 
-Chose SSD (nVME) 4 disks
  ------
-- Subscriptions:
+## Subscriptions: Chose SSD (SATA) 1 disk
   - Subs HDD
     - Disks_for_capacity = capacity / disk_capacity = 0.624 TB / 32 TB = 0,0195 disk
     - Disks_for_throughput = traffic / disk_throughput= 0,000576 mb/s / 100 mb/s = 0,00000576 disks
@@ -202,9 +202,8 @@ Chose SSD (nVME) 4 disks
     - Disks_for_iops = iops / disk_iops = 18 / 1000 = 0.018 disks
     - Disks = 1
 
-Chose SSD (SATA) 1 disk
 -------   
-- Precalculated Feed:
+## Precalculated Feed: Chose SSD (SATA) 1 disk
   - Precalculated Feed HDD
     - Disks_for_capacity = capacity / disk_capacity = 2.6 TB / 32 TB = 0,08125 disk
     - Disks_for_throughput = traffic / disk_throughput= 2.2 mb/s / 100 mb/s = 0,022 disks
@@ -220,9 +219,8 @@ Chose SSD (SATA) 1 disk
   - Feed_cache_user_subscription
     - RAM_capacity = 150 gb 
 
-Chose SSD (SATA) 1 disk
 -------
-- Media:
+## Media: Chose SSD (SATA) 120 disks
  - Media HDD
     - Disks_for_capacity = capacity / disk_capacity = 11 960 TB / 32 TB = 373,75 disk
     - Disks_for_throughput = traffic / disk_throughput= 17 376 mb/s / 100 mb/s = 173,76 disks
@@ -235,12 +233,25 @@ Chose SSD (SATA) 1 disk
     - Disks_for_iops = iops / disk_iops = 410 / 1000 = 0,41 disks
     - Disks = 120
 
-Chose SSD (SATA) 120 disks
+
 -------
+## Search: Chose SSD (SATA) 1 disk
+- Post HDD
+    - Disks_for_capacity = capacity / disk_capacity = 7.8 TB / 32 TB = 0,24375 disk
+    - Disks_for_throughput = traffic / disk_throughput= 6.3 mb/s (no photo in DB) / 100 mb/s = 0.63 disks
+    - Disks_for_iops = iops / disk_iops = 410 / 100 = 4.1 disks
+    - Disks = 5
+
+- Post SSD (SATA)
+    - Disks_for_capacity = capacity / disk_capacity = 7.8 TB / 100 TB = 0,078 disk
+    - Disks_for_throughput = traffic / disk_throughput= 6.3 mb/s (no photo in DB) / 500 mb/s = 0,0126 disks
+    - Disks_for_iops = iops / disk_iops = 410 / 1000 = 0.41 disks
+    - Disks = 1
+
 
 Total disks:
-    - SSD (SATA) = 125 disks
-    - SSD (SATA) = 3 + 4 = 7 disks
+    - SSD (SATA) = 126 disks
+    - SSD (nVME) = 3 + 4 = 7 disks
 -------
 
 # Hosts
@@ -272,4 +283,8 @@ Hosts_with_replication = hosts * replication_factor
    - Hosts = 120 / 20 = 6
    - Hosts_with_replication = 6 * 2 = 12
 
-Total hosts : 30
+- Search
+    - Hosts = 1 / 1 = 1
+    - Hosts_with_replication = 1 * 3 = 3
+
+Total hosts : 33

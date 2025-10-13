@@ -3,6 +3,7 @@ Table post {
   user_id uuid [not null, note: 'Identifier of the user who created the post']
   description text(100) [note: 'Content of the post']
   location varchar [note: 'Location related to the post (coordinates)']
+  tags varchar[] [note: 'Array of tags']
   photo_urls varchar[] [note: 'Array of photo URLs attached to the post']
   created_at timestamp [note: 'Timestamp when the post was created']
   updated_at timestamp [note: 'Timestamp when the post was last updated']
@@ -91,4 +92,11 @@ Table object_storage {
   etag varchar [note: 'Content hash or version identifier']
   data blob [not null, note: 'Raw binary content of the object']
   created_at timestamp [not null, note: 'Timestamp when the object was uploaded']
+}
+
+Table post_search {
+  post_id uuid [primary key, note: 'Unique identifier of the post']
+  body object [note: 'Full request payload stored']
+  tags keyword[] [note: 'Array of tags for filtering/search']
+  location geo_point [note: 'Geo location for distance-based search']
 }
