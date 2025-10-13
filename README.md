@@ -76,8 +76,8 @@
       - RPS(subscribe) = 10 000 000 * 0.15 / 86400 = **18**
 
   - Traffic
-      - traffic(read post meta) = rps * avgPostMetaSize *  postsPerRead = 350 * 900 bytes * 20 = **6.3 gb/s**
-      - traffic(write post meta) = rps * avgPostMetaSize = 60 * 900 bytes = **54 mb/s**
+      - traffic(read post meta) = rps * avgPostMetaSize *  postsPerRead = 350 * 900 bytes * 20 = **6.3 mb/s**
+      - traffic(write post meta) = rps * avgPostMetaSize = 60 * 900 bytes = **54 kb/s**
 
       - traffic(read post media) = rps * avgPhotoSize * amountPhotos * postsPerRead = 350 * 400 000 bytes * 6 * 20 = **16.8 gb/s**
       - traffic(write post media) = rps * avgUploadPhotoSize * amountPhotos = 60 * 1 600 000 bytes * 6 = **576 mb/s**
@@ -132,26 +132,26 @@
 - Posts:
   - Post HDD
     - Disks_for_capacity = capacity / disk_capacity = 7.8 TB / 32 TB = 0,24375 disk
-    - Disks_for_throughput = traffic / disk_throughput= 6 300 mb/s (no photo in DB) / 100 mb/s = 63 disks
+    - Disks_for_throughput = traffic / disk_throughput= 6.3 mb/s (no photo in DB) / 100 mb/s = 0.63 disks
     - Disks_for_iops = iops / disk_iops = 410 / 100 = 4.1 disks
-    - Disks = 63
+    - Disks = 5
 
   - Post SSD (SATA)
     - Disks_for_capacity = capacity / disk_capacity = 7.8 TB / 100 TB = 0,078 disk
-    - Disks_for_throughput = traffic / disk_throughput= 6 300 mb/s (no photo in DB) / 500 mb/s = 12,6 disks
+    - Disks_for_throughput = traffic / disk_throughput= 6.3 mb/s (no photo in DB) / 500 mb/s = 0,0126 disks
     - Disks_for_iops = iops / disk_iops = 410 / 1000 = 0.41 disks
-    - Disks = 13
+    - Disks = 1
 
   - Post SSD (nVME)
     - Disks_for_capacity = capacity / disk_capacity = 7.8 TB / 30 TB = 0,26 disk
-    - Disks_for_throughput = traffic / disk_throughput= 6 300 mb/s (no photo in DB) / 3 000 mb/s = 2,1 disks
+    - Disks_for_throughput = traffic / disk_throughput= 6.3 mb/s (no photo in DB) / 3 000 mb/s = 0,0021 disks
     - Disks_for_iops = iops / disk_iops = 410 / 10 000 = 0.041 disks
-    - Disks = 3
+    - Disks = 1
 
   - Post_reaction_cache
     - RAM_capacity = 17 gb
 
-Chose SSD (nVME) 3 disks
+Chose SSD (SATA) 1 disks
 -------
 - Comments:
   - Comments HDD
@@ -249,8 +249,8 @@ Hosts = disks / disks_per_host
 Hosts_with_replication = hosts * replication_factor 
 
  - Post
-   - Hosts = 3 / 1 = 3
-   - Hosts_with_replication = 3 * 3 = 9
+   - Hosts = 1 / 1 = 1
+   - Hosts_with_replication = 1 * 3 = 3
 
  - Comments
    - Hosts = 3 / 1 = 3
@@ -272,4 +272,4 @@ Hosts_with_replication = hosts * replication_factor
    - Hosts = 120 / 20 = 6
    - Hosts_with_replication = 6 * 2 = 12
 
-Total hosts : 43
+Total hosts : 30
