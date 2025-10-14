@@ -1,3 +1,10 @@
+// Replication:
+// - master-slave (async)
+// - replication factor 2
+//
+// Sharding:
+// - key based by post_id
+
 Table reaction {
   id uuid [primary key,  note: 'Unique identifier of the reaction record']
   post_id uuid [not null, note: 'Post which received the reaction']
@@ -12,7 +19,14 @@ Table reaction {
   }
 }
 
-Table post_reaction {
+// Replication:
+// - master-slave (async)
+// - replication factor 2
+//
+// Sharding:
+// - key based by post_id
+
+Table reaction_post {
   id uuid [primary key,  note: 'Unique identifier of the reaction record']
   post_id uuid [not null, note: 'Post which received the reaction']
   reaction_type varchar(20) [not null, note: 'Type of reaction (like, dislike, heart, laugh, etc.)']

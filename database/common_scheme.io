@@ -3,6 +3,7 @@ Table post {
   user_id uuid [not null, note: 'Identifier of the user who created the post']
   description text(100) [note: 'Content of the post']
   location varchar [note: 'Location related to the post (coordinates)']
+  tags varchar[] [note: 'Array of tags']
   photo_urls varchar[] [note: 'Array of photo URLs attached to the post']
   created_at timestamp [note: 'Timestamp when the post was created']
   updated_at timestamp [note: 'Timestamp when the post was last updated']
@@ -80,4 +81,22 @@ Table feed {
 Table feed_caсhe_user_subscription {
   subscribed_to_id uuid [not null, note: 'User who is being followed']
   subscriber_id uuid[] [not null, note: 'User who subscribes']
+}
+
+Table object_storage {
+  id uuid [pk, not null, note: 'Unique identifier of the stored object']
+  bucket varchar [not null, note: 'Logical storage namespace (bucket)']
+  object_key varchar [not null, note: 'Unique object key, e.g. user/123/photo.jpg']
+  size bigint [not null, note: 'Size of the object in bytes']
+  content_type varchar [note: 'MIME type of the object, e.g. image/jpeg']
+  etag varchar [note: 'Content hash or version identifier']
+  data blob [not null, note: 'Raw binary content of the object']
+  created_at timestamp [not null, note: 'Timestamp when the object was uploaded']
+}
+
+Table post_search {
+  post_id uuid [primary key, note: 'Unique identifier of the post']
+  body object [note: 'Full request payload stored']
+  tags keyword[] [note: 'Array of tags for filtering/search']
+  location geo_point [note: 'Geo location for distance-based search']
 }
