@@ -1,0 +1,40 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+LAYOUT_TOP_DOWN()
+
+' --- Custom Tags ---
+AddElementTag("kafka", $shape=EightSidedShape(), $bgColor="MediumSeaGreen", $fontColor="white")
+AddElementTag("db", $shape=RoundedBoxShape(), $bgColor="LightYellow", $fontColor="black")
+
+SHOW_PERSON_OUTLINE()
+
+' --- Actor ---
+Person(client, "Client", "End user reacting to posts via web or mobile")
+
+' --- Entry Point ---
+Container(lb, "Load Balancer", "Nginx / HAProxy", "Distributes reaction requests across multiple Reaction API instances")
+
+' --- System Boundary for Reaction System ---
+System_Boundary(reactionSystem, "Reaction System") {
+    Container(reactionApi, "Reaction API", "GO", "Handles incoming reaction requests\nCreates, updates, and deletes reactions")
+    Container(reactionsWorker, "Reactions Update Worker", "GO", "Consumes reaction_created events from Kafka\nUpdates reactions_by_post table asynchronously")
+    ContainerDb(reactionDb, "Database", "PostgreSQL", "Stores individual reactions and aggregated reactions by post", $tags="db")
+}
+
+' --- External Systems ---
+System_Ext(postSystem, "Post System", "Manages posts and triggers updates")
+System_Ext(kafkaSystem, "Kafka", "Asynchronous event stream\nUsed for publishing `reaction_created` events", $tags="kafka")
+
+' --- Relationships ---
+Rel_D(client, lb, "Sends reactions", "HTTP/REST")
+Rel_D(lb, reactionApi, "Routes reaction requests", "HTTP/REST")
+
+Rel_D(reactionApi, reactionDb, "Writes individual reactions", "SQL")
+Rel_U(reactionApi, kafkaSystem, "Publishes `reaction_created` events", "Kafka |>")
+
+Rel_U(kafkaSystem, reactionsWorker, "Consumes `reaction_created` events", "Kafka <|")
+Rel_R(reactionsWorker, reactionApi, "Updates reactions_by_post table", "GRPC")
+
+Rel_U(kafkaSystem, postSystem, "Consumes `reaction_created` events to update post counters", "Kafka <|")
+
+@enduml

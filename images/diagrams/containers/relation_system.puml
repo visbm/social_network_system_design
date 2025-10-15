@@ -1,0 +1,35 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+LAYOUT_TOP_DOWN()
+
+' --- Custom Tags ---
+AddElementTag("kafka", $shape=EightSidedShape(), $bgColor="MediumSeaGreen", $fontColor="white")
+AddElementTag("db", $shape=RoundedBoxShape(), $bgColor="LightYellow", $fontColor="black")
+
+SHOW_PERSON_OUTLINE()
+
+' --- Actor ---
+Person(client, "Client", "End user managing relations (follows/friends)")
+
+' --- Entry Point ---
+Container(lb, "Load Balancer", "Nginx / HAProxy", "Distributes relation requests across multiple Relation API instances")
+
+' --- System Boundary for Relation System ---
+System_Boundary(relationSystem, "Relation System") {
+    Container(relationApi, "Relation API", "GO", "Handles creation/deletion of user relationships\nPublishes events to Kafka")
+    ContainerDb(relationDb, "Database", "PostgreSQL", "Stores user relationships (follows/friends/etc.)", $tags="db")
+}
+
+' --- External Systems ---
+System_Ext(feedSystem, "Feed System", "Generates user feeds based on posts and relations")
+System_Ext(kafkaSystem, "Kafka", "Asynchronous event stream\nUsed for publishing `relation_created` events", $tags="kafka")
+
+' --- Relationships ---
+Rel_D(client, lb, "Sends relation requests", "HTTP/REST")
+Rel_D(lb, relationApi, "Routes relation requests", "HTTP/REST")
+
+Rel_D(relationApi, relationDb, "Writes/reads user relationships", "SQL")
+Rel_U(relationApi, kafkaSystem, "Publishes `relation_created` events", "Kafka |>")
+Rel_U(kafkaSystem, feedSystem, "Consumes `relation_created` events to update feeds", "Kafka <|")
+
+@enduml

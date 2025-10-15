@@ -1,0 +1,36 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+LAYOUT_TOP_DOWN()
+
+' --- Custom Tags ---
+AddElementTag("kafka", $shape=EightSidedShape(), $bgColor="MediumSeaGreen", $fontColor="white")
+AddElementTag("db", $shape=RoundedBoxShape(), $bgColor="LightYellow", $fontColor="black")
+
+SHOW_PERSON_OUTLINE()
+
+' --- Actor ---
+Person(client, "Client", "End user performing searches for posts")
+
+' --- Entry Point ---
+Container(lb, "Load Balancer", "Nginx / HAProxy", "Distributes search requests across multiple Search API instances")
+
+' --- System Boundary for Search System ---
+System_Boundary(searchSystem, "Search System") {
+    Container(searchApi, "Search API", "GO + REST", "Handles search requests\nProvides search by tag and location")
+    ContainerDb(elasticDb, "Elasticsearch", "ElasticSearch", "Indexes posts for search by tags and location", $tags="db")
+    Container(searchWorker, "Search Worker", "GO", "Consumes `create_post` events from Kafka\nIndexes new posts into Elasticsearch")
+}
+
+' --- External Systems ---
+System_Ext(postSystem, "Post System", "Creates posts and publishes events to Kafka")
+System_Ext(kafkaSystem, "Kafka", "Asynchronous event stream\nCarries `create_post` events", $tags="kafka")
+
+' --- Relationships ---
+Rel_D(client, lb, "Sends search queries", "HTTP/REST")
+Rel_D(lb, searchApi, "Routes search requests", "HTTP/REST")
+Rel_D(searchApi, elasticDb, "Queries indexed posts", "ElasticSearch query DSL")
+Rel_L(searchWorker, searchApi, "Indexes new posts", "ElasticSearch API")
+Rel_D(kafkaSystem, searchWorker, "Publishes `create_post` events", "Kafka <|")
+Rel_D(postSystem, kafkaSystem, "Publishes `create_post` events", "Kafka |>")
+
+@enduml

@@ -1,0 +1,38 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_TOP_DOWN()
+
+' --- Actors ---
+Person(client, "Client", "User of the social network interacting via web or mobile interface")
+
+' --- System Boundary ---
+System_Boundary(main, "Social Network Platform") {
+
+  ' --- Entry Point ---
+  Container(la, "Load Balancer", "Nginx / HAProxy", "Distributes incoming requests from clients across multiple backend services to ensure availability and scalability")
+
+  ' --- Core Subsystems ---
+  System(feedSystem, "Feed System", "Generates and personalizes user feeds based on relations")
+  System(mediaSystem, "Media System", "Handles image and video uploads, compression, and CDN distribution")
+  System(commentSystem, "Comment System", "Manages creation, editing, and retrieval of user comments under posts")
+  System(postSystem, "Post System", "Responsible for creation, storage, and distribution of user posts")
+  System(reactionSystem, "Reaction System", "Processes user reactions (likes, emojis, etc.) and updates relevant counters")
+  System(relationSystem, "Relation System", "Manages user relationships — follows, unfollows")
+  System(searchSystem, "Search System", "Provides full-text search across location and tags")
+}
+
+' --- Relationships ---
+Rel(client, la, "Sends HTTP requests", "HTTPS")
+
+Rel(la, feedSystem, "Routes feed-related requests", "HTTP/REST")
+Rel(la, mediaSystem, "Routes media download requests", "HTTP/REST")
+Rel(la, commentSystem, "Routes comment actions", "HTTP/REST")
+Rel(la, postSystem, "Routes post-related operations", "HTTP/REST")
+Rel(la, reactionSystem, "Routes reaction-related operations", "HTTP/REST")
+Rel(la, relationSystem, "Routes relation-related actions", "HTTP/REST")
+Rel(la, searchSystem, "Routes search queries", "HTTP/REST")
+
+@enduml
