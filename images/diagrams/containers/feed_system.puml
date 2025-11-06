@@ -18,7 +18,7 @@ Container(lb, "Load Balancer", "Nginx / HAProxy", "Distributes feed requests acr
 ' --- System Boundary for Feed System ---
 System_Boundary(feedSystem, "Feed System") {
     Container(feedApi, "Feed API", "GO + REST", "Serves user feeds\nAggregates posts based on relations and reactions. For user above 10 000 subs creates feed in place")
-    ContainerDb(feedDb, "Feed Database", "PostgreSQL", "Stores user feed entries (user_id -> post_ids)", $tags="db")
+    ContainerDb(feedDb, "Feed Database", "ScyllaDB", "Stores user feed entries (user_id -> post_ids)", $tags="db")
     Container(relCache, "Relations Cache", "Redis", "Caches user relationships for fast feed computation", $tags="cache")
     Container(relWorker, "Relations Worker", "GO", "Consumes `relation_created` events from Kafka\nUpdates feed API which updates relations cache")
 }
