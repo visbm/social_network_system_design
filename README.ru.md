@@ -1,62 +1,63 @@
 # social_network_system_design
 
-# Functional Requirements
+# Функциональные требования
 
-- publishing travel posts with photos, short descriptions, and a specific travel location;
-- rating and commenting on other travelers' posts;
-- subscribing to other travelers to follow their activity;
-- searching for popular travel destinations and viewing posts from those places;
-- viewing other travelers' feeds and the user's own feed based on subscriptions in reverse chronological order;
+- публикация постов из путешествий с фотографиями, небольшим описанием и привязкой к конкретному месту путешествия;
+- оценка и комментарии постов других путешественников;
+- подписка на других путешественников, чтобы следить за их активностью;
+- поиск популярных мест для путешествий и просмотр постов с этих мест;
+- просмотр ленты других путешественников и ленты пользователя, основанной на подписках в обратном хронологическом порядке;
 
-# Non-Functional Requirements
+# Не функциональные требования
 
-- limitations:
-    - maximum of 10 photos per post;
-    - average number of photos per post: 6;
-    - maximum photo size: 2 MB;
-    - average photo size when creating a post: 1.6 MB;
-    - average photo size when retrieving a post: 0.4 MB;
-    - description length limit: 100 characters;
-    - comment length limit: 250 characters;
-    - maximum followers: 1,000,000;
-    - maximum comments per post: 10,000;
-    - average number of comments per post: 500;
+- ограничения:
+    - максимум 10 фото в посте;
+    - среднее кол-во фото 6 в посте;
+    - максимальный вес фото 2 Мб;
+    - средний вес фото при создании поста 1,6 Мб;
+    - средний вес фото при получении поста 0,4 Мб;
+    - описание максимум 100 символов;
+    - комментарии максимум 250 символов;
+    - максимум подписчиков 1 000 000;
+    - максимум комментарий 10 000;
+    - среднее кол-во комментарий к посту 500;
 
-- geography and audience:
-    - DAU 10,000,000;
-    - only CIS region;
-    - vacation seasonality (x2 post creation rate);
+- география и аудитория:
+    - DAU 10 000 000;
+    - только СНГ;
+    - сезонность отпусков(x2 на создание постов);
 
-- availability and reliability:
-    - availability: 99.95%;
-    - data is always stored;
-    - photos are stored and delivered in compressed form up to full HD;
+- доступность и надежность:
+    - доступность 99,95%;
+    - данные храним всегда;
+    - фото храним и отдаем в сжатом виде и до fullHD;
 
-- platforms:
-    - mobile devices and WEB;
+- платформы:
+    - мобильные устройства и ВЕБ;
 
-- user activity:
-    - user creates 1 post per day;
-    - user views posts 10 times per day;
-    - average feed length: 20 posts;
+- пользовательская активность:
+    - пользователь создает 1 пост в день;
+    - пользователь смотрит посты по 10 раз в день;
+    - средняя длина ленты 20 постов;
 
-    - feed is loaded without comments;
-    - user leaves an average of 10 comments per day;
-    - user reads comments for 10 posts per day, 100 comments per request;
+    - ленту грузим без комментарий;
+    - пользователь в среднем оставляет 10 комментария в день;
+    - пользователь в среднем читает комментарии к 10 постам в день по 100 комментарий за запрос;
 
-    - reactions (like/dislike) on posts;
-    - user reacts to half of the posts they view, averaging 100 reactions;
+    - реакции лайк-дизлайк на пост;
+    - пользователь ставит реакции на половину постов которые смотрит, в среднем 100 реакций
 
-    - searching for places by tag and city/country name;
-    - user searches for places once per day and receives a feed of 20 posts;
+    - поиск мест по тегу и имени города/страны;
+    - пользователь в среднем ищет места 1 раз в день и получает ленту на 20 постов;
 
-    - user can subscribe and unsubscribe, average 1 action per week;
-    - average number of followers: 1000;
+    - пользователь может подписываться и отписываться, среднее кол-во действий 1 в неделю;
+    - среднее кол-во подписчиков 1000;
 
-- response time:
-    - post creation request time: up to 2 seconds;
-    - feed read request time: up to 2 seconds;
-    - popular places search time: up to 5 seconds;
+- время отклика:
+    - время запроса на создание поста до 2 секунд;
+    - время запроса на чтение ленты до 2 секунд;
+    - поиск популярных мест до 5 секунд;
+
 
 # Load
 
