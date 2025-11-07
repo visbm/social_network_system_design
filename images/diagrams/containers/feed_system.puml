@@ -1,0 +1,43 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+LAYOUT_TOP_DOWN()
+
+' --- Custom Tags ---
+AddElementTag("kafka", $shape=EightSidedShape(), $bgColor="MediumSeaGreen", $fontColor="white")
+AddElementTag("db", $shape=RoundedBoxShape(), $bgColor="LightYellow", $fontColor="black")
+AddElementTag("cache", $shape=CircleShape(), $bgColor="Wheat", $fontColor="Black")
+
+SHOW_PERSON_OUTLINE()
+
+' --- Actor ---
+Person(client, "Client", "End user viewing personalized feed")
+
+' --- Entry Point ---
+Container(lb, "Load Balancer", "Nginx / HAProxy", "Distributes feed requests across multiple Feed API instances")
+
+' --- System Boundary for Feed System ---
+System_Boundary(feedSystem, "Feed System") {
+    Container(feedApi, "Feed API", "GO + REST", "Serves user feeds\nAggregates posts based on relations and reactions. For user above 10 000 subs creates feed in place")
+    ContainerDb(feedDb, "Feed Database", "ScyllaDB", "Stores user feed entries (user_id -> post_ids)", $tags="db")
+    Container(relCache, "Relations Cache", "Redis", "Caches user relationships for fast feed computation", $tags="cache")
+    Container(relWorker, "Relations Worker", "GO", "Consumes `relation_created` events from Kafka\nUpdates feed API which updates relations cache")
+}
+
+' --- External Systems ---
+System_Ext(postSystem, "Post System", "Provides post data")
+System_Ext(kafkaSystem, "Kafka", "Asynchronous event stream\nCarries `relation_created` events", $tags="kafka")
+System_Ext(relationSystem, "Relation System", "Publishes `relation_created` events to Kafka")
+
+' --- Relationships ---
+Rel_D(client, lb, "Requests feed", "HTTP/REST")
+Rel_D(lb, feedApi, "Routes feed requests", "HTTP/REST")
+
+Rel_D(feedApi, feedDb, "Reads/writes user feed", "SQL")
+Rel_D(feedApi, relCache, "Reads user relationships for feed computation", "Redis")
+Rel_D(feedApi, postSystem, "Fetches post content and metadata", "GRPC")
+
+Rel_R(relWorker, feedApi, "Updates relations cache asynchronously via API", "GRPC")
+Rel_D(kafkaSystem, relWorker, "Consumes `relation_created` events", "Kafka <|")
+Rel_D(relationSystem, kafkaSystem, "Publishes `relation_created` events", "Kafka |>")
+
+@enduml

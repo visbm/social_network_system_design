@@ -1,0 +1,27 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+LAYOUT_TOP_DOWN()
+
+' --- Custom Tags ---
+AddElementTag("db", $shape=RoundedBoxShape(), $bgColor="LightYellow", $fontColor="black")
+
+SHOW_PERSON_OUTLINE()
+
+' --- Actor ---
+Person(client, "Client", "End user adding and viewing comments")
+
+' --- Entry Point ---
+Container(lb, "Load Balancer", "Nginx / HAProxy", "Distributes comment requests across multiple Comment API instances")
+
+' --- System Boundary for Comment System ---
+System_Boundary(commentSystem, "Comment System") {
+    Container(commentApi, "Comment API", "GO", "Handles incoming comment requests\nCreates, edits, and retrieves comments under posts")
+    ContainerDb(commentDb, "Database", "PostgreSQL", "Stores comments", $tags="db")
+}
+
+' --- Relationships ---
+Rel_D(client, lb, "Sends comment-related requests", "HTTP/REST")
+Rel_D(lb, commentApi, "Routes requests", "HTTP/REST")
+Rel_D(commentApi, commentDb, "Reads/writes comments", "SQL")
+
+@enduml

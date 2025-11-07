@@ -1,0 +1,62 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+LAYOUT_TOP_DOWN()
+
+' --- Custom Tags ---
+AddElementTag("cache", $shape=RoundedBoxShape(), $bgColor="Wheat", $fontColor="Black")
+AddElementTag("kafka", $shape=EightSidedShape(), $bgColor="MediumSeaGreen", $fontColor="white")
+AddElementTag("db", $shape=RoundedBoxShape(), $bgColor="LightYellow", $fontColor="black")
+
+
+SHOW_PERSON_OUTLINE()
+
+' --- Actor ---
+Person(client, "Client", "End user accessing posts via web or mobile")
+
+' --- Entry Point ---
+  Container(la, "Load Balancer", "Nginx / HAProxy", "Distributes incoming requests from clients across multiple backend services to ensure availability and scalability")
+
+
+' --- System Boundary for Post System ---
+
+System_Boundary(postSystem, "Post System") {
+
+    Container(postService, "Post Service", "GO", "Handles incoming post-related requests\nCreates, edits, and retrieves posts")
+    Container(bgWorker, "Reaction Sync Worker", "GO", "Update cache from reactioin events")
+    ContainerDb(containerDb, "Database", "PostgreSQL", "Stores posts and metadata\nSupports queries for feed generation", $tags="db")
+    Container(reactionCache, "Cache", "Redis", "Store reactions by post", $tags="cache")
+
+}
+
+' --- External Systems ---
+System_Ext(searchSystem, "Search System", "Provides search across users, posts,\nand tags")
+System_Ext(reactionSystem, "Reaction System", "Handles likes and reactions\nUpdates counters asynchronously")
+System_Ext(mediaSystem, "Media System", "Manages images \nDirect interaction for uploads/downloads")
+System_Ext(feedSystem, "Feed System", "Create a feed based by relations")
+System_Ext(kafkaSystem, "Kafka", "Asynchronous event stream\nUsed for publishing events", $tags="kafka")
+
+' --- Relationships ---
+
+Rel_D(client, la, "Sends post requests", "HTTP/REST")
+Rel_D(la, postService, "Sends post requests", "HTTP/REST")
+
+Rel_D(postService, containerDb, "Reads/writes posts", "SQL")
+
+Rel_U(postService, reactionSystem, "Get reaction if cache is empty", "GRPC")
+
+Rel_D(postService, reactionCache, "Reads/writes reactions", "Redis")
+
+Rel_R(postService, mediaSystem, "Uploads media and confirm creation of post", "GRPC")
+
+Rel_U(postService, kafkaSystem, "Publishes 'create_post' events", "Kafka |>")
+Rel_D(reactionSystem, kafkaSystem, "Publishes 'reactions_by_post.create' events", "Kafka |>")
+
+Rel_U(kafkaSystem, feedSystem, "Consume 'create_post' events", "Kafka <|")
+Rel_U(kafkaSystem, searchSystem, "Consume 'create_post' events", "Kafka <|")
+Rel_D(kafkaSystem, bgWorker, "Consume 'reactions_by_post.create' events", "Kafka <|")
+
+Rel_R(bgWorker, postService, "Update reactions by post", "")
+
+
+
+@enduml

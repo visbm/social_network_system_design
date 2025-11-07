@@ -288,3 +288,27 @@ Hosts_with_replication = hosts * replication_factor
     - Hosts_with_replication = 1 * 3 = 3
 
 Total hosts : 33
+-----
+![context.png](images/diagrams/context.png)
+Level 1. System context diagram
+
+![post_system.png](images/diagrams/containers/post_system.png)
+Level 2. Post system container diagram
+
+![media_system.png](images/diagrams/containers/media_system.png)
+Level 2. Media system container diagram
+
+![reaction_system.png](images/diagrams/containers/reaction_system.png)
+Level 2. Reaction system container diagram
+
+![comment_system.png](images/diagrams/containers/comment_system.png)
+Level 2. Comment system container diagram
+
+![relation_system.png](images/diagrams/containers/relation_system.png)
+Level 2. Relation system container diagram
+
+![feed_system.png](images/diagrams/containers/feed_system.png)
+Level 2. Feed system container diagram
+
+![search_system.png](images/diagrams/containers/search_system.png)
+Level 2. Search system container diagram

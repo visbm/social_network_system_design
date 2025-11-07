@@ -1,0 +1,41 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+LAYOUT_TOP_DOWN()
+
+' --- Custom Tags ---
+AddElementTag("db", $shape=RoundedBoxShape(), $bgColor="LightYellow", $fontColor="black")
+
+SHOW_PERSON_OUTLINE()
+
+' --- Actor ---
+Person(client, "Client", "End user uploading and viewing media")
+
+' --- Entry Point ---
+Container(lb, "Load Balancer", "Nginx / HAProxy", "Distributes upload and download requests across Media API instances")
+
+' --- System Boundary for Media System ---
+System_Boundary(mediaSystem, "Media System") {
+
+    Container(mediaApi, "Media API", "GO", "Handles upload and download requests")
+
+    ContainerDb(storage, "Object Storage", "Ceph", "Stores media files and their optimized versions", $tags="db")
+
+}
+
+' --- External Systems ---
+System_Ext(postSystem, "Post System", "Creates posts referencing uploaded media")
+System_Ext(cdn, "CDN", "Delivers optimized media to clients globally")
+
+' --- Relationships ---
+Rel_D(client, lb, "Downloads media", "HTTP/REST")
+Rel_D(client, cdn, "Downloads media", "HTTP/REST")
+
+Rel_D(lb, mediaApi, "Routes requests", "HTTP/REST")
+
+Rel_D(mediaApi, storage, "Uploads raw files", "S3 API")
+
+Rel_D(postSystem, mediaApi, "Uploads raw files and notifies", "GRPC")
+
+Rel_U(mediaApi, cdn, "Serves optimized media through", "HTTPS")
+
+@enduml
